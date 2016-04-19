@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="db_name">podataka</string>
+    <integer name="db_version">1</integer>
+    <string-array name="db_scan">
+        <item>mobi.stos.podataka.test.bean.Carro</item>
+        <item>mobi.stos.podataka.test.bean.Montadora</item>
+    </string-array>
+    <string name="db_log">false</string>
+</resources>
