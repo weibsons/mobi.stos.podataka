@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="db_name">podataka</string>
+    <string name="db_name">sample-db</string>
     <integer name="db_version">1</integer>
     <string-array name="db_scan">
         <item>mobi.stos.podataka.test.bean.Carro</item>
