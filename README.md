@@ -206,5 +206,6 @@ Achou e corrigiu um bug ou tem alguma feature em mente e deseja contribuir?
 
 **S'tos App**
 
-Nossa Págian: http://stos.mobi/
-Nossos Apps: https://play.google.com/store/apps/dev?id=9117205727352262184
+* Nossa Página: http://stos.mobi/
+
+* Nossos Apps: https://play.google.com/store/apps/dev?id=9117205727352262184
