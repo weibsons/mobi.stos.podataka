@@ -204,6 +204,7 @@ Achou e corrigiu um bug ou tem alguma feature em mente e deseja contribuir?
 * Adicione sua feature ou correção de bug.
 * Envie um pull request no [GitHub].
 
-** S'tos App **
+**S'tos App**
+
 Nossa Págian: http://stos.mobi/
 Nossos Apps: https://play.google.com/store/apps/dev?id=9117205727352262184
