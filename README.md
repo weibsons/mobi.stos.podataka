@@ -26,8 +26,7 @@ android {
 
 dependencies {
     ...
-    compile 'br.com.uol.ps:library:0.4'
-    compile 'com.google.code.gson:gson:+'
+    compile ..
     ...
 }
 
