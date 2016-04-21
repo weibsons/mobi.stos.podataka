@@ -183,6 +183,48 @@ public class CarroBo extends AbstractService<Carro> implements ICarroBo {
 
 ```
 
+Configurando o Mapeamento
+-------------------------
+
+A parte essencial do projeto é o mapeamento de suas entidades. Infelizmente o Android não está permitindo o scan dos pacotes (quem conseguir fazer seria de boa ajuda) e por hora será necessário mapear as classes Entidades manualmente (como no antigo mapeamento do Hibernate).
+
+Dentro do diretório `src/main/res/values/` crie um arquivo chamado `db.xml` com a seguinte estrutura:
+
+```xml
+<resources>
+    <string name="db_name">sample-db</string>
+    <integer name="db_version">1</integer>
+    <string-array name="db_scan">
+        <item>mobi.stos.podataka.test.bean.Carro</item>
+        <item>mobi.stos.podataka.test.bean.Montadora</item>
+    </string-array>
+    <string name="db_log">false</string>
+</resources>
+```
+
+Onde:
+
+**db_name**
+
+Será o nome do seu banco de dados
+
+**db_version**
+
+A versão do seu banco de dados, como é realizado no padrão, usar números inteiro.
+
+**db_log**
+
+Se você quer exibir o Log das consultas SQL geradas.
+
+**db_scan**
+
+Cada item representa o endereço do seu package + nome da Classe conforme apresentado no exemplo.
+Lembrando que só serão mapeada as classes que possuirem a annotation @Entity
+
+
+
+
+
 Licença
 -------
 
