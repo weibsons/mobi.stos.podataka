@@ -26,7 +26,7 @@ android {
 
 dependencies {
     ...
-    compile ..
+    compile 'mobi.stos:podataka_lib:0.1'
     ...
 }
 
