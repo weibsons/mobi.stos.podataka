@@ -412,11 +412,6 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
         }
     }
 
-    /**
-     * Use this code only if you have a simple primary key.
-     * For complex primary key create your own method
-     * @param entity @Entity
-     */
     @Override
     public void update(T entity) throws NoPrimaryKeyFoundException, NoPrimaryKeyValueFoundException {
         try {
@@ -433,11 +428,6 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
         }
     }
 
-    /**
-     * Use this code only if you have a simple primary key.
-     * For complex primary key create your own method
-     * @param entity Entity
-     */
     @Override
     public void delete(T entity) throws NoPrimaryKeyFoundException, NoPrimaryKeyValueFoundException {
         try {

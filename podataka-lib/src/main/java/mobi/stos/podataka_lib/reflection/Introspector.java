@@ -1,15 +1,10 @@
 package mobi.stos.podataka_lib.reflection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 
 import mobi.stos.podataka_lib.exception.IntrospectionException;
 
 public class Introspector {
-
-    private static final Logger logger = LoggerFactory.getLogger(Introspector.class);
 
     public static String decapitalize(String name) {
         if (name == null || "".equals(name)) {

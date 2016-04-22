@@ -1,8 +1,5 @@
 package mobi.stos.podataka_lib.reflection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -12,26 +9,20 @@ import java.util.List;
 
 public class PropertyUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(PropertyUtils.class);
 
     public static boolean isWriteable(Object target, String name) {
-        //logger.info("isWriteable (target = " + target + ", name = " + name + ")");
         PropertyDescriptor descriptor = getPropertyDescriptor(target, name);
         boolean retval = descriptor.getWriteMethod() != null;
-        //logger.info("retval = " + retval);
         return retval;
     }
 
     public static Class getPropertyType(Object target, String name) {
-        //logger.info("getPropertyType (target = " + target + ", name = " + name + ")");
         PropertyDescriptor descriptor = getPropertyDescriptor(target, name);
         Class retval = descriptor.getWriteMethod().getParameterTypes()[0];
-        //logger.info("retval = " + retval);
         return retval;
     }
 
     public static void setProperty(Object target, String name, Object value) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        //logger.info("setProperty (target = " + target + ", name = " + name + ", value = " + value + ")");
         PropertyDescriptor descriptor = getPropertyDescriptor(target, name);
         descriptor.getWriteMethod().invoke(target, new Object[]{value});
     }
@@ -77,7 +68,6 @@ public class PropertyUtils {
     }
 
     public static boolean isReadable(Object bean, String propertyName) {
-        //logger.info("isReadable (target = " + bean + ", name = " + propertyName + ")");
         return getPropertyDescriptor(bean, propertyName).getReadMethod() != null;
     }
 

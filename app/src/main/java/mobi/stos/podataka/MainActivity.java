@@ -3,6 +3,7 @@ package mobi.stos.podataka;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ import mobi.stos.podataka_lib.exception.NoPrimaryKeyValueFoundException;
 public class MainActivity extends Activity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final boolean EXEC_TEST = false;
+    private static final boolean EXEC_TEST = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,5 +122,7 @@ public class MainActivity extends Activity {
         }
 
         Log.v(TAG, "************** FIM DO PROCESSO **************** ");
+
+        Toast.makeText(this, "Veja o log para mais detalhes", Toast.LENGTH_LONG).show();
     }
 }
