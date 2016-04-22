@@ -12,21 +12,10 @@ Configurando seu Projeto
 Gradle:
 ```gradle
 
-android {
-  ...
-  
-  packagingOptions {
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
-  }
-  
-}
-
-...
-
 dependencies {
     ...
     compile 'mobi.stos:podataka_lib:0.1'
+    compile 'org.reflections:reflections:0.9.10'
     ...
 }
 
