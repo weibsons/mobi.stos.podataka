@@ -5,8 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import org.reflections.ReflectionUtils;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Date;
@@ -128,16 +126,16 @@ public class SQLiteConnect extends SQLiteOpenHelper {
             builder.append("CREATE TABLE IF NOT EXISTS ").append(table).append(" (");
 
             boolean newTable = true;
-            Set<Field> fields = ReflectionUtils.getAllFields(klass, null);
-            for (Field field : fields) {
+            for (Field field : klass.getDeclaredFields()) {
                 boolean isPrimaryKey = field.isAnnotationPresent(PrimaryKey.class);
                 boolean isForeingKey = field.isAnnotationPresent(ForeignKey.class);
                 boolean isColumn = field.isAnnotationPresent(Column.class);
                 boolean isTransient = field.isAnnotationPresent(Transient.class);
-                if (!isTransient) {
+                if (!isTransient && !field.isSynthetic()) {
                     String name = field.getName().toLowerCase();
                     int length = 0;
                     boolean nullable = true;
+                    Log.v(this.getClass().getSimpleName(), "column: " + name);
 
                     if (!newTable) {
                         builder.append(",");
@@ -169,14 +167,15 @@ public class SQLiteConnect extends SQLiteOpenHelper {
 
                         Field fieldKey = null;
                         String referenceField = "";
-                        Set<Field> fkey = ReflectionUtils.getAllFields(field.getType(), ReflectionUtils.withAnnotation(PrimaryKey.class));
-                        for (Field f : fkey) {
-                            referenceField = f.getName();
-                            PrimaryKey pk = f.getAnnotation(PrimaryKey.class);
-                            if (!pk.name().equals("")) {
-                                referenceField = pk.name();
+                        for (Field f : field.getType().getDeclaredFields()) {
+                            if (f.isAnnotationPresent(PrimaryKey.class)) {
+                                referenceField = f.getName();
+                                PrimaryKey pk = f.getAnnotation(PrimaryKey.class);
+                                if (!pk.name().equals("")) {
+                                    referenceField = pk.name();
+                                }
+                                fieldKey = f;
                             }
-                            fieldKey = f;
                         }
 
                         referenceField = referenceField.toLowerCase();

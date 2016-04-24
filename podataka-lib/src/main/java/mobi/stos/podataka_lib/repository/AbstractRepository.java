@@ -7,8 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
 
-import org.reflections.ReflectionUtils;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -56,7 +54,7 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
         for (Field field : klass.getDeclaredFields()) {
             boolean isPrimaryKey = field.isAnnotationPresent(PrimaryKey.class);
             boolean isTransient = field.isAnnotationPresent(Transient.class);
-            if (!isTransient && isPrimaryKey) {
+            if (!isTransient && isPrimaryKey && !field.isSynthetic()) {
                 String name = field.getName().toLowerCase();
                 PrimaryKey pk = field.getAnnotation(PrimaryKey.class);
                 if (!TextUtils.isEmpty(pk.name())) {
@@ -72,7 +70,7 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
         for (Field field : klass.getDeclaredFields()) {
             boolean isPrimaryKey = field.isAnnotationPresent(PrimaryKey.class);
             boolean isTransient = field.isAnnotationPresent(Transient.class);
-            if (!isTransient && isPrimaryKey) {
+            if (!isTransient && isPrimaryKey && !field.isSynthetic()) {
                 Object value = PropertyUtils.getProperty(entity, field.getName().toLowerCase());
                 if (value == null) {
                     throw new NoPrimaryKeyValueFoundException();
@@ -112,7 +110,7 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
                 boolean isForeingKey = field.isAnnotationPresent(ForeignKey.class);
                 boolean isColumn = field.isAnnotationPresent(Column.class);
                 boolean isTransient = field.isAnnotationPresent(Transient.class);
-                if (!isTransient) {
+                if (!isTransient && !field.isSynthetic()) {
 
                     String name = field.getName().toLowerCase();
                     String columnName = name;
@@ -130,12 +128,13 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
 
                         String reference = field.getType().getSimpleName();
                         String referenceField = "";
-                        Set<Field> fkey = ReflectionUtils.getAllFields(field.getType(), ReflectionUtils.withAnnotation(PrimaryKey.class));
-                        for (Field f : fkey) {
-                            referenceField = f.getName();
-                            PrimaryKey pk = f.getAnnotation(PrimaryKey.class);
-                            if (!pk.name().equals("")) {
-                                referenceField = pk.name();
+                        for (Field f : field.getType().getDeclaredFields()) {
+                            if (f.isAnnotationPresent(PrimaryKey.class)) {
+                                referenceField = f.getName();
+                                PrimaryKey pk = f.getAnnotation(PrimaryKey.class);
+                                if (!pk.name().equals("")) {
+                                    referenceField = pk.name();
+                                }
                             }
                         }
 
@@ -193,7 +192,7 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
             boolean isForeingKey = field.isAnnotationPresent(ForeignKey.class);
             boolean isColumn = field.isAnnotationPresent(Column.class);
             boolean isTransient = field.isAnnotationPresent(Transient.class);
-            if (!isTransient) {
+            if (!isTransient && !field.isSynthetic()) {
                 String name = field.getName().toLowerCase();
 
                 if (isPrimaryKey) {
@@ -206,12 +205,13 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
 
                     String reference = field.getType().getSimpleName();
                     String referenceField = "";
-                    Set<Field> fkey = ReflectionUtils.getAllFields(field.getType(), ReflectionUtils.withAnnotation(PrimaryKey.class));
-                    for (Field f : fkey) {
-                        referenceField = f.getName();
-                        PrimaryKey pk = f.getAnnotation(PrimaryKey.class);
-                        if (!pk.name().equals("")) {
-                            referenceField = pk.name();
+                    for (Field f : field.getType().getDeclaredFields()) {
+                        if (f.isAnnotationPresent(PrimaryKey.class)) {
+                            referenceField = f.getName();
+                            PrimaryKey pk = f.getAnnotation(PrimaryKey.class);
+                            if (!pk.name().equals("")) {
+                                referenceField = pk.name();
+                            }
                         }
                     }
 
@@ -247,7 +247,7 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
         for (Field field : klass.getDeclaredFields()) {
             try {
                 boolean isTransient = field.isAnnotationPresent(Transient.class);
-                if (!isTransient) {
+                if (!isTransient && !field.isSynthetic()) {
                     Object value = PropertyUtils.getProperty(entity, field.getName().toLowerCase());
                     if (value == null)
                         continue;
@@ -271,12 +271,13 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
 
                         String reference = field.getType().getSimpleName();
                         String referenceField = "";
-                        Set<Field> fkey = ReflectionUtils.getAllFields(field.getType(), ReflectionUtils.withAnnotation(PrimaryKey.class));
-                        for (Field f : fkey) {
-                            referenceField = f.getName();
-                            PrimaryKey pk = f.getAnnotation(PrimaryKey.class);
-                            if (!pk.name().equals("")) {
-                                referenceField = pk.name();
+                        for (Field f : field.getType().getDeclaredFields()) {
+                            if (f.isAnnotationPresent(PrimaryKey.class)) {
+                                referenceField = f.getName();
+                                PrimaryKey pk = f.getAnnotation(PrimaryKey.class);
+                                if (!pk.name().equals("")) {
+                                    referenceField = pk.name();
+                                }
                             }
                         }
 

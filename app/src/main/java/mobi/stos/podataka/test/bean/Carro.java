@@ -7,10 +7,6 @@ import mobi.stos.podataka_lib.annotations.Entity;
 import mobi.stos.podataka_lib.annotations.ForeignKey;
 import mobi.stos.podataka_lib.annotations.PrimaryKey;
 
-
-/**
- * Created by links_000 on 19/04/2016.
- */
 @Entity
 public class Carro implements Serializable {
 
