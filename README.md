@@ -13,8 +13,7 @@ Gradle:
 ```gradle
 
 dependencies {
-    compile 'mobi.stos:podataka_lib:0.1'
-    compile 'org.reflections:reflections:0.9.10'
+    compile 'mobi.stos:podataka_lib:0.1b'
 }
 
 ```
