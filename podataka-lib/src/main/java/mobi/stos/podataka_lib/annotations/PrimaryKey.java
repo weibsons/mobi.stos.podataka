@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD})
 public @interface PrimaryKey {
 
-    String name() default "id";
+    String name() default "";
 
     boolean autoIncrement() default true;
 
