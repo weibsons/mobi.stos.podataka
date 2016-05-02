@@ -6,5 +6,5 @@
         <item>mobi.stos.podataka.test.bean.Carro</item>
         <item>mobi.stos.podataka.test.bean.Montadora</item>
     </string-array>
-    <string name="db_log">false</string>
+    <string name="db_log">true</string>
 </resources>

@@ -119,15 +119,17 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
                     if (isPrimaryKey) {
                         PrimaryKey pk = field.getAnnotation(PrimaryKey.class);
                         if (!TextUtils.isEmpty(pk.name())) {
-                            name = pk.name();
+                            columnName = pk.name();
                         }
-                        PropertyUtils.setProperty(entity, name, getInt(name));
+                        //PropertyUtils.setProperty(entity, name, getInt(name));
+                        this._setValue(entity, field, name, columnName);
                         continue;
                     } else if (isForeingKey) {
                         ForeignKey fk = field.getAnnotation(ForeignKey.class);
 
                         String reference = field.getType().getSimpleName();
                         String referenceField = "";
+                        Field fkField = null;
                         for (Field f : field.getType().getDeclaredFields()) {
                             if (f.isAnnotationPresent(PrimaryKey.class)) {
                                 referenceField = f.getName();
@@ -135,6 +137,8 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
                                 if (!pk.name().equals("")) {
                                     referenceField = pk.name();
                                 }
+                                fkField = f;
+                                break;
                             }
                         }
 
@@ -146,7 +150,8 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
 
                         Object fkObject = field.getType().newInstance();
 
-                        PropertyUtils.setProperty(fkObject, referenceField, getInt(reference));
+                        //PropertyUtils.setProperty(fkObject, referenceField, getInt(reference));
+                        this._setValue(fkObject, fkField, referenceField, reference);
                         PropertyUtils.setProperty(entity, field.getName(), fkObject);
                         continue;
                     } else if (isColumn) {
@@ -155,26 +160,7 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
                             columnName = c.name();
                         }
                     }
-                    Type type = field.getGenericType();
-                    if (type instanceof Class && ((Class<?>) type).isEnum()) {
-                        PropertyUtils.setProperty(entity, name, field.getType().getEnumConstants()[getInt(columnName)]);
-                    } else if (type == Integer.TYPE) {
-                        PropertyUtils.setProperty(entity, name, getInt(columnName));
-                    } else if (type == Double.TYPE) {
-                        PropertyUtils.setProperty(entity, name, getDouble(columnName));
-                    } else if (type == Float.TYPE) {
-                        PropertyUtils.setProperty(entity, name, getFloat(columnName));
-                    } else if (type == Long.TYPE || type == Long.class) {
-                        PropertyUtils.setProperty(entity, name, getLong(columnName));
-                    } else if (type == Boolean.TYPE) {
-                        PropertyUtils.setProperty(entity, name, getBoolean(columnName));
-                    } else if (type == Date.class) {
-                        if (getLong(name) != null) {
-                            PropertyUtils.setProperty(entity, name, new Date(getLong(columnName)));
-                        }
-                    } else {
-                        PropertyUtils.setProperty(entity, name, getString(columnName));
-                    }
+                    this._setValue(entity, field, name, columnName);
                 }
             }
             return entity;
@@ -182,6 +168,29 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
             Log.e(AbstractRepository.class.getSimpleName(), "Erro ao tentar obter informação do getCursor() : " + logName);
             e.printStackTrace();
             return null;
+        }
+    }
+
+    private void _setValue(Object entity, Field field, String name, String column) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        Type type = field.getGenericType();
+        if (type instanceof Class && ((Class<?>) type).isEnum()) {
+            PropertyUtils.setProperty(entity, name, field.getType().getEnumConstants()[getInt(column)]);
+        } else if (type == Integer.TYPE) {
+            PropertyUtils.setProperty(entity, name, getInt(column));
+        } else if (type == Double.TYPE) {
+            PropertyUtils.setProperty(entity, name, getDouble(column));
+        } else if (type == Float.TYPE) {
+            PropertyUtils.setProperty(entity, name, getFloat(column));
+        } else if (type == Long.TYPE || type == Long.class) {
+            PropertyUtils.setProperty(entity, name, getLong(column));
+        } else if (type == Boolean.TYPE) {
+            PropertyUtils.setProperty(entity, name, getBoolean(column));
+        } else if (type == Date.class) {
+            if (getLong(name) != null) {
+                PropertyUtils.setProperty(entity, name, new Date(getLong(column)));
+            }
+        } else {
+            PropertyUtils.setProperty(entity, name, getString(column));
         }
     }
 

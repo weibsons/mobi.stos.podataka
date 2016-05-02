@@ -17,6 +17,8 @@ import mobi.stos.podataka_lib.annotations.Entity;
 import mobi.stos.podataka_lib.annotations.ForeignKey;
 import mobi.stos.podataka_lib.annotations.PrimaryKey;
 import mobi.stos.podataka_lib.annotations.Transient;
+import mobi.stos.podataka_lib.exception.ForeignKeyCandidateException;
+import mobi.stos.podataka_lib.exception.PrimaryKeyCandidateException;
 
 public class SQLiteConnect extends SQLiteOpenHelper {
 
@@ -135,7 +137,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
                     String name = field.getName().toLowerCase();
                     int length = 0;
                     boolean nullable = true;
-                    Log.v(this.getClass().getSimpleName(), "column: " + name);
+                    //Log.v(this.getClass().getSimpleName(), "column: " + name);
 
                     if (!newTable) {
                         builder.append(",");
@@ -148,6 +150,11 @@ public class SQLiteConnect extends SQLiteOpenHelper {
                         if (!pk.name().equals("")) {
                             name = pk.name().toLowerCase();
                         }
+
+                        if (!sqlDataType(field, 0).equals("INTEGER")) {
+                            throw new PrimaryKeyCandidateException();
+                        }
+
                         builder.append(name).append(" ").append(sqlDataType(field, 0)).append(" NOT NULL PRIMARY KEY");
                         if (pk.autoIncrement()) {
                             builder.append(" AUTOINCREMENT");
@@ -180,6 +187,10 @@ public class SQLiteConnect extends SQLiteOpenHelper {
 
                         referenceField = referenceField.toLowerCase();
                         reference = reference.toLowerCase() + "_" + referenceField;
+
+                        if (!sqlDataType(fieldKey, 0).equals("INTEGER")) {
+                            throw new ForeignKeyCandidateException();
+                        }
 
                         builder.append(reference).append(" ").append(sqlDataType(fieldKey, 0));
                         if (!fk.nullable()) {
