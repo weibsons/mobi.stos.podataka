@@ -13,7 +13,7 @@ Gradle:
 ```gradle
 
 dependencies {
-    compile 'mobi.stos:podataka_lib:0.1b'
+    compile 'mobi.stos:podataka_lib:0.2b'
 }
 
 ```
