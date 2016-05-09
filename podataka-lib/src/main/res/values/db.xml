@@ -4,5 +4,5 @@
     <integer name="db_version">1</integer>
     <string-array name="db_scan">
     </string-array>
-    <string name="db_log">false</string>
+    <string name="db_log">true</string>
 </resources>

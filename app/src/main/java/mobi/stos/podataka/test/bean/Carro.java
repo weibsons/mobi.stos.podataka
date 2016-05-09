@@ -12,7 +12,7 @@ public class Carro implements Serializable {
 
     @PrimaryKey
     private int id;
-    @ForeignKey(nullable = false)
+    @ForeignKey
     private Montadora montadora;
     @Column(nullable = false, length = 7)
     private String placa;

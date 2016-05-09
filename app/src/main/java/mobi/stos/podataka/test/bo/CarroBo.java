@@ -1,20 +1,18 @@
-package mobi.stos.podataka.test.bo.impl;
+package mobi.stos.podataka.test.bo;
 
 import android.content.Context;
 
 import mobi.stos.podataka.test.bean.Carro;
-import mobi.stos.podataka.test.bo.ICarroBo;
-import mobi.stos.podataka.test.dao.ICarroDao;
-import mobi.stos.podataka.test.dao.impl.CarroDao;
+import mobi.stos.podataka.test.dao.CarroDao;
 import mobi.stos.podataka_lib.interfaces.IOperations;
 import mobi.stos.podataka_lib.service.AbstractService;
 
 /**
  * Created by links_000 on 19/04/2016.
  */
-public class CarroBo extends AbstractService<Carro> implements ICarroBo {
+public class CarroBo extends AbstractService<Carro> {
 
-    private ICarroDao dao;
+    private CarroDao dao;
 
     public CarroBo(Context context) {
         super();

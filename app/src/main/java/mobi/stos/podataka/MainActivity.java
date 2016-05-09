@@ -10,10 +10,10 @@ import java.util.List;
 
 import mobi.stos.podataka.test.bean.Carro;
 import mobi.stos.podataka.test.bean.Montadora;
+import mobi.stos.podataka.test.bo.CarroBo;
 import mobi.stos.podataka.test.bo.ICarroBo;
 import mobi.stos.podataka.test.bo.IMontadoraBo;
-import mobi.stos.podataka.test.bo.impl.CarroBo;
-import mobi.stos.podataka.test.bo.impl.MontadoraBo;
+import mobi.stos.podataka.test.bo.MontadoraBo;
 import mobi.stos.podataka_lib.exception.NoPrimaryKeyFoundException;
 import mobi.stos.podataka_lib.exception.NoPrimaryKeyValueFoundException;
 
@@ -85,12 +85,7 @@ public class MainActivity extends Activity {
         IMontadoraBo iMontadoraBo = new MontadoraBo(this);
         ICarroBo iCarroBo = new CarroBo(this);
 
-        Log.v(TAG, "Carregando a listagem de montadoras ");
-        List<Montadora> montadoras = new ArrayList<>();
-        montadoras.add(new Montadora("Peugeot", true));
-        montadoras.add(new Montadora("Gol", true));
-        montadoras.add(new Montadora("Fiat", true));
-        iMontadoraBo.insert(montadoras);
+        iMontadoraBo.insert(new Montadora("Fiat", true));
 
         Montadora sample = iMontadoraBo.get("nome = ?", new String[]{"Gol"});
 

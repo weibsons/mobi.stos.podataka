@@ -1,20 +1,18 @@
-package mobi.stos.podataka.test.bo.impl;
+package mobi.stos.podataka.test.bo;
 
 import android.content.Context;
 
 import mobi.stos.podataka.test.bean.Montadora;
-import mobi.stos.podataka.test.bo.IMontadoraBo;
-import mobi.stos.podataka.test.dao.IMontadoraDao;
-import mobi.stos.podataka.test.dao.impl.MontadoraDao;
+import mobi.stos.podataka.test.dao.MontadoraDao;
 import mobi.stos.podataka_lib.interfaces.IOperations;
 import mobi.stos.podataka_lib.service.AbstractService;
 
 /**
  * Created by links_000 on 19/04/2016.
  */
-public class MontadoraBo extends AbstractService<Montadora> implements IMontadoraBo {
+public class MontadoraBo extends AbstractService<Montadora> {
 
-    private IMontadoraDao dao;
+    private MontadoraDao dao;
 
     public MontadoraBo(Context context) {
         super();
