@@ -71,6 +71,10 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
             boolean isPrimaryKey = field.isAnnotationPresent(PrimaryKey.class);
             boolean isTransient = field.isAnnotationPresent(Transient.class);
             if (!isTransient && isPrimaryKey && !field.isSynthetic()) {
+                if (!PropertyUtils.exists(entity, field.getName().toLowerCase())) {
+                    continue;
+                }
+
                 Object value = PropertyUtils.getProperty(entity, field.getName().toLowerCase());
                 if (value == null) {
                     throw new NoPrimaryKeyValueFoundException();
@@ -111,10 +115,13 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
                 boolean isColumn = field.isAnnotationPresent(Column.class);
                 boolean isTransient = field.isAnnotationPresent(Transient.class);
                 if (!isTransient && !field.isSynthetic()) {
-
                     String name = field.getName().toLowerCase();
                     String columnName = name;
                     logName = name;
+
+                    if (!PropertyUtils.exists(entity, name)) {
+                        continue;
+                    }
 
                     if (isPrimaryKey) {
                         PrimaryKey pk = field.getAnnotation(PrimaryKey.class);
@@ -204,6 +211,10 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
             if (!isTransient && !field.isSynthetic()) {
                 String name = field.getName().toLowerCase();
 
+                if (!PropertyUtils.exists(klass, name)) {
+                    continue;
+                }
+
                 if (isPrimaryKey) {
                     PrimaryKey pk = field.getAnnotation(PrimaryKey.class);
                     if (!TextUtils.isEmpty(pk.name())) {
@@ -256,8 +267,13 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
         for (Field field : klass.getDeclaredFields()) {
             try {
                 boolean isTransient = field.isAnnotationPresent(Transient.class);
+                String fieldName = field.getName().toLowerCase();
                 if (!isTransient && !field.isSynthetic()) {
-                    Object value = PropertyUtils.getProperty(entity, field.getName().toLowerCase());
+                    if (!PropertyUtils.exists(entity, fieldName)) {
+                        continue;
+                    }
+
+                    Object value = PropertyUtils.getProperty(entity, fieldName);
                     if (value == null)
                         continue;
 
@@ -400,12 +416,14 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
     }
 
     @Override
-    public void insert(T entity) {
+    public long insert(T entity) {
+        long id = -1;
         try {
-            getSqLiteDatabase().insert(table(), null, getValues(entity));
+            id = getSqLiteDatabase().insert(table(), null, getValues(entity));
             commit();
         } finally {
             closeSQLiteDatabase();
+            return id;
         }
     }
 

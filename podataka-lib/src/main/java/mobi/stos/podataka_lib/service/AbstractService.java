@@ -13,8 +13,8 @@ public abstract class AbstractService<T extends Serializable> implements IOperat
     protected abstract IOperations<T> getDao();
 
     @Override
-    public void insert(T entity) {
-        getDao().insert(entity);
+    public long insert(T entity) {
+        return getDao().insert(entity);
     }
 
     @Override

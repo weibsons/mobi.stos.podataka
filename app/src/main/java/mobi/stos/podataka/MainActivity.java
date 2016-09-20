@@ -5,14 +5,19 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.junit.internal.Classes;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Set;
+
+import dalvik.system.DexFile;
 import mobi.stos.podataka.test.bean.Carro;
 import mobi.stos.podataka.test.bean.Montadora;
 import mobi.stos.podataka.test.bo.CarroBo;
-import mobi.stos.podataka.test.bo.ICarroBo;
-import mobi.stos.podataka.test.bo.IMontadoraBo;
 import mobi.stos.podataka.test.bo.MontadoraBo;
 import mobi.stos.podataka_lib.exception.NoPrimaryKeyFoundException;
 import mobi.stos.podataka_lib.exception.NoPrimaryKeyValueFoundException;
@@ -82,29 +87,29 @@ public class MainActivity extends Activity {
     private void test() {
         Log.v(TAG, "************** INICIALIZANDO **************** ");
 
-        IMontadoraBo iMontadoraBo = new MontadoraBo(this);
-        ICarroBo iCarroBo = new CarroBo(this);
+        MontadoraBo montadoraBo = new MontadoraBo(this);
+        CarroBo carroBo = new CarroBo(this);
 
-        iMontadoraBo.insert(new Montadora("Fiat", true));
+        long id = montadoraBo.insert(new Montadora("Fiat", true));
 
-        Montadora sample = iMontadoraBo.get("nome = ?", new String[]{"Gol"});
+        Montadora sample = montadoraBo.get("nome = ?", new String[]{"Fiat"});
 
         Log.v(TAG, "Carregando os carros ");
         List<Carro> carros = new ArrayList<>();
         carros.add(new Carro(sample, "KKE1062", "Preto", 2008, 2009));
         carros.add(new Carro(sample, "KLY8373", "Branco", 2014, 2014));
-        iCarroBo.insert(carros);
+        carroBo.insert(carros);
 
         Carro rep = null;
         Log.v(TAG, "Listando...");
-        for (Carro carro : iCarroBo.list()) {
+        for (Carro carro : carroBo.list()) {
             Log.v(TAG, carro.getPlaca() + " - " + carro.getAnoFabricacao() + " - " + carro.getMontadora().getId());
 
             rep = carro;
         }
         rep.setAnoFabricacao(2015);
         try {
-            iCarroBo.update(rep);
+            carroBo.update(rep);
         } catch (NoPrimaryKeyFoundException e) {
             e.printStackTrace();
         } catch (NoPrimaryKeyValueFoundException e) {
@@ -112,7 +117,7 @@ public class MainActivity extends Activity {
         }
 
         Log.v(TAG, "After update");
-        for (Carro carro : iCarroBo.list()) {
+        for (Carro carro : carroBo.list()) {
             Log.v(TAG, carro.getPlaca() + " - " + carro.getAnoFabricacao() + " - " + carro.getMontadora().getId());
         }
 

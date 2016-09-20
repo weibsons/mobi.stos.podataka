@@ -11,8 +11,9 @@ public interface IOperations<T extends Serializable> {
     /***
      * Função representa persistência de somente 1 entidade por vez
      * @param entity Entity
+     * @return long ID do registro
      */
-    void insert(T entity);
+    long insert(T entity);
 
     /***
      * Função representa a persistência de uma lista de objetos numa mesma conexão.

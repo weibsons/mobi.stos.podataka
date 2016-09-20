@@ -12,8 +12,7 @@ public class PropertyUtils {
 
     public static boolean isWriteable(Object target, String name) {
         PropertyDescriptor descriptor = getPropertyDescriptor(target, name);
-        boolean retval = descriptor.getWriteMethod() != null;
-        return retval;
+        return descriptor.getWriteMethod() != null;
     }
 
     public static Class getPropertyType(Object target, String name) {
@@ -65,6 +64,10 @@ public class PropertyUtils {
 
         });
         return propertyDescriptors;
+    }
+
+    public static boolean exists(Object bean, String propertyName) {
+        return getPropertyDescriptor(bean, propertyName) != null && isReadable(bean, propertyName);
     }
 
     public static boolean isReadable(Object bean, String propertyName) {
