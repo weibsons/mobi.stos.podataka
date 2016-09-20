@@ -13,7 +13,7 @@ Gradle:
 ```gradle
 
 dependencies {
-    compile 'mobi.stos:podataka_lib:0.2b'
+    compile 'mobi.stos:podataka_lib:0.3b'
 }
 
 ```
@@ -94,7 +94,7 @@ Essas operações contem funcionalidades básicas do sistema que serão utilizad
 Funções de `IOperations<T>`
 
 ```java
-void insert(T entity);
+long insert(T entity);
 
 void insert(List<T> list);
 
