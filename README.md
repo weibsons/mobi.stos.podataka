@@ -13,7 +13,7 @@ Gradle:
 ```gradle
 
 dependencies {
-    compile 'mobi.stos:podataka_lib:0.1b'
+    compile 'mobi.stos:podataka_lib:0.2b'
 }
 
 ```
@@ -128,10 +128,7 @@ Exemplo:
 
 ```java
 
-public interface ICarroDao extends IOperations<Carro> {
-}
-
-public class CarroDao extends AbstractRepository<Carro> implements ICarroDao {
+public class CarroDao extends AbstractRepository<Carro> {
 
     public CarroDao(Context context) {
         super(context, Carro.class);
@@ -145,12 +142,9 @@ As classes de Serviço utilizar extendidas de `AbstractService`
 
 ```java
 
-public interface ICarroBo extends IOperations<Carro> {
-}
+public class CarroBo extends AbstractService<Carro> {
 
-public class CarroBo extends AbstractService<Carro> implements ICarroBo {
-
-    private ICarroDao dao;
+    private CarroDao dao;
 
     public CarroBo(Context context) {
         super();
