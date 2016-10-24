@@ -135,6 +135,10 @@ public class SQLiteConnect extends SQLiteOpenHelper {
                 boolean isTransient = field.isAnnotationPresent(Transient.class);
                 if (!isTransient && !field.isSynthetic()) {
                     String name = field.getName().toLowerCase();
+                    if (name.equalsIgnoreCase("serialversionuid")) {
+                        continue;
+                    }
+
                     int length = 0;
                     boolean nullable = true;
                     //Log.v(this.getClass().getSimpleName(), "column: " + name);
@@ -200,8 +204,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
                         if (!sqlForeignKey.toString().equals("")) {
                             sqlForeignKey.append(",");
                         }
-                        sqlForeignKey.append("FOREIGN KEY (").append(reference).append(") ")
-                                .append("REFERENCES ").append(name).append("(").append(referenceField).append(")");
+                        sqlForeignKey.append("FOREIGN KEY (").append(reference).append(") ").append("REFERENCES ").append(name).append("(").append(referenceField).append(")");
                         continue;
                     } else if (isColumn) {
                         Column column = field.getAnnotation(Column.class);
@@ -212,6 +215,10 @@ public class SQLiteConnect extends SQLiteOpenHelper {
                         forcedType = column.sqlType();
                         nullable = column.nullable();
                     }
+                    if (length == 0) {
+                        length = 255;
+                    }
+
                     if (forcedType.equals("")) {
                         builder.append(name).append(" ").append(sqlDataType(field, length));
                     } else {

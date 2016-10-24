@@ -30,6 +30,8 @@ import mobi.stos.podataka_lib.reflection.PropertyUtils;
 
 public abstract class AbstractRepository<T extends Serializable> implements IOperations<T>, ISQLHelper<T> {
 
+    public PropertyUtils propertyUtils;
+
     public Class<T> klass;
     private Context context;
     private SQLiteDatabase sqLiteDatabase;
@@ -66,36 +68,28 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
         throw new NoPrimaryKeyFoundException();
     }
 
-    private Object getPrimaryValue(T entity) throws NoPrimaryKeyValueFoundException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    private Object getPrimaryValue() throws NoPrimaryKeyValueFoundException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         for (Field field : klass.getDeclaredFields()) {
             boolean isPrimaryKey = field.isAnnotationPresent(PrimaryKey.class);
             boolean isTransient = field.isAnnotationPresent(Transient.class);
             if (!isTransient && isPrimaryKey && !field.isSynthetic()) {
-                if (!PropertyUtils.exists(entity, field.getName().toLowerCase())) {
+                if (!propertyUtils.exists(field.getName())) {
                     continue;
                 }
 
-                Object value = PropertyUtils.getProperty(entity, field.getName().toLowerCase());
+                Object value = propertyUtils.getProperty(field.getName());
                 if (value == null) {
                     throw new NoPrimaryKeyValueFoundException();
                 } else {
                     Type type = field.getGenericType();
                     if (type instanceof Class && ((Class<?>) type).isEnum()) {
                         return ((Enum) value).ordinal();
-                    } else  if (value instanceof Date) {
+                    } else if (value instanceof Date) {
                         return ((Date) value).getTime();
                     } else if (value instanceof Boolean) {
                         return ((Boolean) value) ? 1 : 0;
-                    } else if (value instanceof Integer) {
-                        return (Integer) value;
-                    } else if (value instanceof Double) {
-                        return (Double) value;
-                    } else if (value instanceof Long) {
-                        return (Long) value;
-                    } else if (value instanceof Float) {
-                        return (Float) value;
-                    } else if (value instanceof Short) {
-                        return (Short) value;
+                    } else if (value instanceof Integer || value instanceof Double || value instanceof Long || value instanceof Float || value instanceof Short) {
+                        return value;
                     } else {
                         return String.valueOf(value);
                     }
@@ -109,6 +103,8 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
         String logName = "";
         try {
             T entity = klass.newInstance();
+            this.propertyUtils = new PropertyUtils(entity);
+
             for (Field field : klass.getDeclaredFields()) {
                 boolean isPrimaryKey = field.isAnnotationPresent(PrimaryKey.class);
                 boolean isForeingKey = field.isAnnotationPresent(ForeignKey.class);
@@ -119,7 +115,7 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
                     String columnName = name;
                     logName = name;
 
-                    if (!PropertyUtils.exists(entity, name)) {
+                    if (!propertyUtils.exists(name)) {
                         continue;
                     }
 
@@ -128,7 +124,6 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
                         if (!TextUtils.isEmpty(pk.name())) {
                             columnName = pk.name();
                         }
-                        //PropertyUtils.setProperty(entity, name, getInt(name));
                         this._setValue(entity, field, name, columnName);
                         continue;
                     } else if (isForeingKey) {
@@ -156,10 +151,8 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
                         }
 
                         Object fkObject = field.getType().newInstance();
-
-                        //PropertyUtils.setProperty(fkObject, referenceField, getInt(reference));
                         this._setValue(fkObject, fkField, referenceField, reference);
-                        PropertyUtils.setProperty(entity, field.getName(), fkObject);
+                        propertyUtils.setProperty(field.getName(), fkObject);
                         continue;
                     } else if (isColumn) {
                         Column c = field.getAnnotation(Column.class);
@@ -180,24 +173,47 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
 
     private void _setValue(Object entity, Field field, String name, String column) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Type type = field.getGenericType();
-        if (type instanceof Class && ((Class<?>) type).isEnum()) {
-            PropertyUtils.setProperty(entity, name, field.getType().getEnumConstants()[getInt(column)]);
-        } else if (type == Integer.TYPE) {
-            PropertyUtils.setProperty(entity, name, getInt(column));
-        } else if (type == Double.TYPE) {
-            PropertyUtils.setProperty(entity, name, getDouble(column));
-        } else if (type == Float.TYPE) {
-            PropertyUtils.setProperty(entity, name, getFloat(column));
-        } else if (type == Long.TYPE || type == Long.class) {
-            PropertyUtils.setProperty(entity, name, getLong(column));
-        } else if (type == Boolean.TYPE) {
-            PropertyUtils.setProperty(entity, name, getBoolean(column));
-        } else if (type == Date.class) {
-            if (getLong(name) != null) {
-                PropertyUtils.setProperty(entity, name, new Date(getLong(column)));
+        if (entity.getClass().getSimpleName().equalsIgnoreCase(klass.getSimpleName())) {
+            if (type instanceof Class && ((Class<?>) type).isEnum()) {
+                propertyUtils.setProperty(name, field.getType().getEnumConstants()[getInt(column)]);
+            } else if (type == Integer.TYPE) {
+                propertyUtils.setProperty(name, getInt(column));
+            } else if (type == Double.TYPE) {
+                propertyUtils.setProperty(name, getDouble(column));
+            } else if (type == Float.TYPE) {
+                propertyUtils.setProperty(name, getFloat(column));
+            } else if (type == Long.TYPE || type == Long.class) {
+                propertyUtils.setProperty(name, getLong(column));
+            } else if (type == Boolean.TYPE) {
+                propertyUtils.setProperty(name, getBoolean(column));
+            } else if (type == Date.class) {
+                if (getLong(name) != null) {
+                    propertyUtils.setProperty(name, new Date(getLong(column)));
+                }
+            } else {
+                propertyUtils.setProperty(name, getString(column));
             }
         } else {
-            PropertyUtils.setProperty(entity, name, getString(column));
+            PropertyUtils fkPropertyUtils = new PropertyUtils(entity);
+            if (type instanceof Class && ((Class<?>) type).isEnum()) {
+                fkPropertyUtils.setProperty(name, field.getType().getEnumConstants()[getInt(column)]);
+            } else if (type == Integer.TYPE) {
+                fkPropertyUtils.setProperty(name, getInt(column));
+            } else if (type == Double.TYPE) {
+                fkPropertyUtils.setProperty(name, getDouble(column));
+            } else if (type == Float.TYPE) {
+                fkPropertyUtils.setProperty(name, getFloat(column));
+            } else if (type == Long.TYPE || type == Long.class) {
+                fkPropertyUtils.setProperty(name, getLong(column));
+            } else if (type == Boolean.TYPE) {
+                fkPropertyUtils.setProperty(name, getBoolean(column));
+            } else if (type == Date.class) {
+                if (getLong(name) != null) {
+                    fkPropertyUtils.setProperty(name, new Date(getLong(column)));
+                }
+            } else {
+                fkPropertyUtils.setProperty(name, getString(column));
+            }
         }
     }
 
@@ -211,7 +227,7 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
             if (!isTransient && !field.isSynthetic()) {
                 String name = field.getName().toLowerCase();
 
-                if (!PropertyUtils.exists(klass, name)) {
+                if (!propertyUtils.exists(name)) {
                     continue;
                 }
 
@@ -222,7 +238,6 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
                     }
                 } else if (isForeingKey) {
                     ForeignKey fk = field.getAnnotation(ForeignKey.class);
-
                     String reference = field.getType().getSimpleName();
                     String referenceField = "";
                     for (Field f : field.getType().getDeclaredFields()) {
@@ -241,7 +256,6 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
                     }
 
                     name = reference;
-
                 } else if (isColumn) {
                     Column c = field.getAnnotation(Column.class);
                     if (!TextUtils.isEmpty(c.name())) {
@@ -263,18 +277,20 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
     }
 
     private ContentValues getValues(T entity) {
+        this.propertyUtils = new PropertyUtils(entity);
+
         ContentValues values = new ContentValues();
         for (Field field : klass.getDeclaredFields()) {
             try {
                 boolean isTransient = field.isAnnotationPresent(Transient.class);
                 String fieldName = field.getName().toLowerCase();
                 if (!isTransient && !field.isSynthetic()) {
-                    if (!PropertyUtils.exists(entity, fieldName)) {
+                    if (!propertyUtils.exists(fieldName)) {
                         continue;
                     }
 
-                    Object value = PropertyUtils.getProperty(entity, fieldName);
-                    if (value == null)
+                    Object value = propertyUtils.getProperty(fieldName);
+                    if (value == null || String.valueOf(value).equalsIgnoreCase("NULL"))
                         continue;
 
                     boolean isPrimaryKey = field.isAnnotationPresent(PrimaryKey.class);
@@ -293,7 +309,6 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
                         }
                     } else if (isForeingKey) {
                         ForeignKey fk = field.getAnnotation(ForeignKey.class);
-
                         String reference = field.getType().getSimpleName();
                         String referenceField = "";
                         for (Field f : field.getType().getDeclaredFields()) {
@@ -305,14 +320,20 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
                                 }
                             }
                         }
-
                         reference = reference.toLowerCase() + "_" + referenceField.toLowerCase();
                         if (!TextUtils.isEmpty(fk.name())) {
                             reference = fk.name();
                         }
-
                         name = reference;
-                        value = PropertyUtils.getProperty(value, referenceField);
+                        /**
+                         *  Precisa desse campo por causa da PropertyUtils FINAL que responde a
+                         *  classe da instancia, por esse código ser somenten da FK é necessário
+                         *  gerar um novo mapeamento.
+                         *
+                         *  Verificar uma forma de deixar isso mais rápido no futuro.
+                         */
+                        PropertyUtils fkPropertyUtils = new PropertyUtils(value);
+                        value = fkPropertyUtils.getProperty(referenceField);
                     } else if (isColumn) {
                         Column c = field.getAnnotation(Column.class);
                         if (!TextUtils.isEmpty(c.name())) {
@@ -443,7 +464,7 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
     @Override
     public void update(T entity) throws NoPrimaryKeyFoundException, NoPrimaryKeyValueFoundException {
         try {
-            getSqLiteDatabase().update(table(), getValues(entity), this.getPrimaryKey() + " = ?", new String[]{String.valueOf( getPrimaryValue(entity) )});
+            getSqLiteDatabase().update(table(), getValues(entity), this.getPrimaryKey() + " = ?", new String[]{String.valueOf( getPrimaryValue() )});
             commit();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
@@ -459,7 +480,8 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
     @Override
     public void delete(T entity) throws NoPrimaryKeyFoundException, NoPrimaryKeyValueFoundException {
         try {
-            getSqLiteDatabase().delete(table(), this.getPrimaryKey() + " = ?", new String[]{String.valueOf( getPrimaryValue(entity) )});
+            this.propertyUtils = new PropertyUtils(entity);
+            getSqLiteDatabase().delete(table(), this.getPrimaryKey() + " = ?", new String[]{String.valueOf( getPrimaryValue() )});
             commit();
         } catch (InvocationTargetException e) {
             e.printStackTrace();

@@ -5,16 +5,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.junit.internal.Classes;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Set;
 
-import dalvik.system.DexFile;
 import mobi.stos.podataka.test.bean.Carro;
 import mobi.stos.podataka.test.bean.Montadora;
 import mobi.stos.podataka.test.bo.CarroBo;
