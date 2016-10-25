@@ -45,6 +45,14 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
     public AbstractRepository(Context context, Class<T> klass) {
         this.context = context;
         this.klass = klass;
+
+        try {
+            propertyUtils = new PropertyUtils(klass.newInstance());
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -104,7 +112,6 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
         try {
             T entity = klass.newInstance();
             this.propertyUtils = new PropertyUtils(entity);
-
             for (Field field : klass.getDeclaredFields()) {
                 boolean isPrimaryKey = field.isAnnotationPresent(PrimaryKey.class);
                 boolean isForeingKey = field.isAnnotationPresent(ForeignKey.class);
@@ -124,7 +131,7 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
                         if (!TextUtils.isEmpty(pk.name())) {
                             columnName = pk.name();
                         }
-                        this._setValue(entity, field, name, columnName);
+                        this._setValue(propertyUtils, field, name, columnName);
                         continue;
                     } else if (isForeingKey) {
                         ForeignKey fk = field.getAnnotation(ForeignKey.class);
@@ -151,7 +158,8 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
                         }
 
                         Object fkObject = field.getType().newInstance();
-                        this._setValue(fkObject, fkField, referenceField, reference);
+                        PropertyUtils fkPropertyUtils = new PropertyUtils(fkObject);
+                        this._setValue(fkPropertyUtils, fkField, referenceField, reference);
                         propertyUtils.setProperty(field.getName(), fkObject);
                         continue;
                     } else if (isColumn) {
@@ -160,7 +168,7 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
                             columnName = c.name();
                         }
                     }
-                    this._setValue(entity, field, name, columnName);
+                    this._setValue(propertyUtils, field, name, columnName);
                 }
             }
             return entity;
@@ -171,49 +179,26 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
         }
     }
 
-    private void _setValue(Object entity, Field field, String name, String column) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    private void _setValue(PropertyUtils pu, Field field, String name, String column) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Type type = field.getGenericType();
-        if (entity.getClass().getSimpleName().equalsIgnoreCase(klass.getSimpleName())) {
-            if (type instanceof Class && ((Class<?>) type).isEnum()) {
-                propertyUtils.setProperty(name, field.getType().getEnumConstants()[getInt(column)]);
-            } else if (type == Integer.TYPE) {
-                propertyUtils.setProperty(name, getInt(column));
-            } else if (type == Double.TYPE) {
-                propertyUtils.setProperty(name, getDouble(column));
-            } else if (type == Float.TYPE) {
-                propertyUtils.setProperty(name, getFloat(column));
-            } else if (type == Long.TYPE || type == Long.class) {
-                propertyUtils.setProperty(name, getLong(column));
-            } else if (type == Boolean.TYPE) {
-                propertyUtils.setProperty(name, getBoolean(column));
-            } else if (type == Date.class) {
-                if (getLong(name) != null) {
-                    propertyUtils.setProperty(name, new Date(getLong(column)));
-                }
-            } else {
-                propertyUtils.setProperty(name, getString(column));
+        if (type instanceof Class && ((Class<?>) type).isEnum()) {
+            pu.setProperty(name, field.getType().getEnumConstants()[getInt(column)]);
+        } else if (type == Integer.TYPE) {
+            pu.setProperty(name, getInt(column));
+        } else if (type == Double.TYPE) {
+            pu.setProperty(name, getDouble(column));
+        } else if (type == Float.TYPE) {
+            pu.setProperty(name, getFloat(column));
+        } else if (type == Long.TYPE || type == Long.class) {
+            pu.setProperty(name, getLong(column));
+        } else if (type == Boolean.TYPE) {
+            pu.setProperty(name, getBoolean(column));
+        } else if (type == Date.class) {
+            if (getLong(name) != null) {
+                pu.setProperty(name, new Date(getLong(column)));
             }
         } else {
-            PropertyUtils fkPropertyUtils = new PropertyUtils(entity);
-            if (type instanceof Class && ((Class<?>) type).isEnum()) {
-                fkPropertyUtils.setProperty(name, field.getType().getEnumConstants()[getInt(column)]);
-            } else if (type == Integer.TYPE) {
-                fkPropertyUtils.setProperty(name, getInt(column));
-            } else if (type == Double.TYPE) {
-                fkPropertyUtils.setProperty(name, getDouble(column));
-            } else if (type == Float.TYPE) {
-                fkPropertyUtils.setProperty(name, getFloat(column));
-            } else if (type == Long.TYPE || type == Long.class) {
-                fkPropertyUtils.setProperty(name, getLong(column));
-            } else if (type == Boolean.TYPE) {
-                fkPropertyUtils.setProperty(name, getBoolean(column));
-            } else if (type == Date.class) {
-                if (getLong(name) != null) {
-                    fkPropertyUtils.setProperty(name, new Date(getLong(column)));
-                }
-            } else {
-                fkPropertyUtils.setProperty(name, getString(column));
-            }
+            pu.setProperty(name, getString(column));
         }
     }
 
@@ -532,7 +517,7 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
             commit();
             return entity;
         } finally {
-            if ( cursor != null && !cursor.isClosed())
+            if (cursor != null && !cursor.isClosed())
                 cursor.close();
             closeSQLiteDatabase();
         }
@@ -550,7 +535,7 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
             commit();
             return entity;
         } finally {
-            if ( cursor != null && !cursor.isClosed())
+            if (cursor != null && !cursor.isClosed())
                 cursor.close();
             closeSQLiteDatabase();
         }
@@ -566,7 +551,7 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
                 sql += " WHERE " + fields ;
             }
 
-            cursor = getSqLiteDatabase().rawQuery(sql, values);
+            cursor = getSqLiteDatabase(MODE.READABLE).rawQuery(sql, values);
             while (cursor.moveToNext()) {
                 contagem = cursor.getInt(0);
             }
@@ -574,7 +559,7 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
             commit();
             return contagem;
         } finally {
-            if ( cursor != null && !cursor.isClosed())
+            if (cursor != null && !cursor.isClosed())
                 cursor.close();
             closeSQLiteDatabase();
         }

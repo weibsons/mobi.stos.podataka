@@ -81,9 +81,12 @@ public class MainActivity extends Activity {
         Log.v(TAG, "************** INICIALIZANDO **************** ");
 
         MontadoraBo montadoraBo = new MontadoraBo(this);
+        montadoraBo.clean();
         CarroBo carroBo = new CarroBo(this);
 
         long id = montadoraBo.insert(new Montadora("Fiat", true));
+        Log.v(TAG, "MONTADORA: " + id);
+        montadoraBo.get(null, null);
 
         Montadora sample = montadoraBo.get("nome = ?", new String[]{"Fiat"});
 
@@ -100,7 +103,9 @@ public class MainActivity extends Activity {
 
             rep = carro;
         }
-        rep.setAnoFabricacao(2015);
+        int ano = (int) (Math.random() * 9999);
+        Log.v(TAG, "Novo ano que será setado o ultimo registro: " + ano);
+        rep.setAnoFabricacao(ano);
         try {
             carroBo.update(rep);
         } catch (NoPrimaryKeyFoundException e) {

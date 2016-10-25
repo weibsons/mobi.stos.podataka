@@ -5,7 +5,6 @@
     <string-array name="db_scan">
         <item>mobi.stos.podataka.test.bean.Carro</item>
         <item>mobi.stos.podataka.test.bean.Montadora</item>
-        <item>mobi.stos.podataka.test.bean.InspecaoVigilante</item>
     </string-array>
     <string name="db_log">true</string>
 </resources>
