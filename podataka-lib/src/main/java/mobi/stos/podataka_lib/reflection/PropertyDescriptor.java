@@ -4,9 +4,12 @@ import java.lang.reflect.Method;
 
 public class PropertyDescriptor {
 
-    private final String name;
-    private final Method readMethod;
-    private final Method writeMethod;
+    private String name;
+    private Method readMethod;
+    private Method writeMethod;
+
+    public PropertyDescriptor() {
+    }
 
     public PropertyDescriptor(String name, Method read, Method write) {
         this.name = name.toLowerCase();
@@ -24,6 +27,18 @@ public class PropertyDescriptor {
 
     public String getName() {
         return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setReadMethod(Method readMethod) {
+        this.readMethod = readMethod;
+    }
+
+    public void setWriteMethod(Method writeMethod) {
+        this.writeMethod = writeMethod;
     }
 
     @Override

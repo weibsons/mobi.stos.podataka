@@ -89,6 +89,7 @@ public class MainActivity extends Activity {
         montadoraBo.get(null, null);
 
         Montadora sample = montadoraBo.get("nome = ?", new String[]{"Fiat"});
+        Log.v(TAG, "status: " + sample.isStatus());
 
         Log.v(TAG, "Carregando os carros ");
         List<Carro> carros = new ArrayList<>();

@@ -122,6 +122,7 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
                     String columnName = name;
                     logName = name;
 
+
                     if (!propertyUtils.exists(name)) {
                         continue;
                     }

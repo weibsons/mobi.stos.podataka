@@ -2,9 +2,8 @@ package mobi.stos.podataka_lib.reflection;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 public class PropertyUtils {
 
@@ -50,12 +49,12 @@ public class PropertyUtils {
      * Return a list of methods from the class which have the specified prefix.
      */
     @SuppressWarnings("unchecked")
-    private List<Method> accessors(Class clazz) {
-        List<Method> retval = new ArrayList<>();
+    private Map<String, Method> accessors(Class clazz) {
+        Map<String, Method> retval = new HashMap<>();
         for (Method method : clazz.getMethods()) {
             if (!method.getName().endsWith("Class") && !(method.getName().length() == 11 && method.getName().endsWith("Property"))) {
                 if (method.getName().startsWith("is") || method.getName().startsWith("get") || method.getName().startsWith("set")) {
-                    retval.add(method);
+                    retval.put(method.getName(), method);
                 }
             }
         }
@@ -63,31 +62,30 @@ public class PropertyUtils {
     }
 
     private void initHashMap() {
-        List<Method> methods = accessors(this.target.getClass());
-        for (Method method : methods) {
-            Method readMethod;
-            String property;
-
-            if (method.getName().startsWith("is")) {
-                readMethod = getMethodWithPrefix(methods, "is", method.getName().substring(2));
-                property = method.getName().substring(2);
+        Map<String, Method> methods = accessors(this.target.getClass());
+        for (Map.Entry<String, Method> map : methods.entrySet()) {
+            PropertyDescriptor descriptor;
+            String name;
+            if (map.getKey().startsWith("is")) {
+                name = map.getKey().substring(2);
             } else {
-                readMethod = getMethodWithPrefix(methods, "get", method.getName().substring(3));
-                property = method.getName().substring(3);
+                name = map.getKey().substring(3);
             }
-            Method writeMethod = getMethodWithPrefix(methods, "set", property);
+            name = name.toLowerCase();
 
-            PropertyDescriptor descriptor = new PropertyDescriptor(property, readMethod, writeMethod);
-            hashMap.put(descriptor.getName().toLowerCase(), descriptor);
+            if (!hashMap.containsKey(name)) {
+                descriptor = new PropertyDescriptor();
+                descriptor.setName(name);
+            } else {
+                descriptor = hashMap.get(name);
+            }
+            if (map.getKey().startsWith("is") || map.getKey().startsWith("get")) {
+                descriptor.setReadMethod(map.getValue());
+            } else {
+                descriptor.setWriteMethod(map.getValue());
+            }
+            hashMap.put(name, descriptor);
         }
     }
 
-    private Method getMethodWithPrefix(List<Method> methods, String prefix, String name) {
-        for (Method method : methods) {
-            if (method.getName().toLowerCase().equals((prefix + name).toLowerCase())) {
-                return method;
-            }
-        }
-        return null;
-    }
 }
