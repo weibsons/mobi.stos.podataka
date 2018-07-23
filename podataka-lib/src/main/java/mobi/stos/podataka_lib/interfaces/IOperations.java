@@ -60,6 +60,8 @@ public interface IOperations<T extends Serializable> {
 
     List<T> list(String fields, String[] values, String orderBy, int limit);
 
+    List<T> list(String fields, String[] values, String orderBy, int limit, int offset);
+
     /***
      * Função conta registro da tabela com base a critéria informada. Caso não seja passado null será
      * feita uma contagem total de registro da tabela.

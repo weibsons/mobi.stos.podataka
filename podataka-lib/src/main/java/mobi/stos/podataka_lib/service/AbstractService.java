@@ -68,6 +68,11 @@ public abstract class AbstractService<T extends Serializable> implements IOperat
     }
 
     @Override
+    public List<T> list(String fields, String[] values, String orderBy, int limit, int offset) {
+        return getDao().list(fields, values, orderBy, limit, offset);
+    }
+
+    @Override
     public int count(String fields, String[] values) {
         return getDao().count(fields, values);
     }

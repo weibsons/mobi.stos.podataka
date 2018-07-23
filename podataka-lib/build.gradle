@@ -1,14 +1,14 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 24
-        versionCode 5
-        versionName "0.4b"
+        targetSdkVersion 27
+        versionCode 8
+        versionName "0.7b"
     }
     buildTypes {
         release {
@@ -19,9 +19,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'junit:junit:4.12'
-    compile 'org.jetbrains:annotations-java5:15.0'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'junit:junit:4.12'
+    implementation 'org.jetbrains:annotations-java5:15.0'
 }
 
 apply from: 'https://raw.github.com/chrisbanes/gradle-mvn-push/master/gradle-mvn-push.gradle'

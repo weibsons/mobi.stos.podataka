@@ -507,10 +507,22 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
 
     @Override
     public List<T> list(String fields, String[] values, String orderBy, int limit) {
+        return list(fields, values, orderBy, limit, -1);
+    }
+
+    @Override
+    public List<T> list(String fields, String[] values, String orderBy, int limit, int offset) {
         try {
             List<T> entity = new ArrayList<>();
-            String limite = limit == -1 ? null : String.valueOf(limit);
-            cursor = getSqLiteDatabase(MODE.READABLE).query(table(), columns(), fields, values, null, null, orderBy, limite);
+
+            String offsetLimit = null;
+            if (offset != -1) {
+                offsetLimit = offset + "," + limit;
+            } else if (limit != -1) {
+                offsetLimit = String.valueOf(limit);
+            }
+
+            cursor = getSqLiteDatabase(MODE.READABLE).query(table(), columns(), fields, values, null, null, orderBy, offsetLimit);
             while (cursor.moveToNext()) {
                 entity.add(getCursor());
             }
