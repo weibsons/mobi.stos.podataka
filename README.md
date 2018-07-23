@@ -116,6 +116,8 @@ List<T> list(String fields, String[] values, String orderBy);
 
 List<T> list(String fields, String[] values, String orderBy, int limit);
 
+List<T> list(String fields, String[] values, String orderBy, int limit, int offset);
+
 int count(String fields, String[] values);
 
 void clean();
