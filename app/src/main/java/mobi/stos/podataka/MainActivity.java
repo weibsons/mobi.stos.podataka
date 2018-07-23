@@ -99,7 +99,7 @@ public class MainActivity extends Activity {
 
         Carro rep = null;
         Log.v(TAG, "Listando...");
-        for (Carro carro : carroBo.list()) {
+        for (Carro carro : carroBo.list(10)) {
             Log.v(TAG, carro.getPlaca() + " - " + carro.getAnoFabricacao() + " - " + carro.getMontadora().getId());
 
             rep = carro;

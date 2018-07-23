@@ -482,27 +482,27 @@ public abstract class AbstractRepository<T extends Serializable> implements IOpe
 
     @Override
     public List<T> list() {
-        return list(null, null, null, -1);
+        return list(null, null, null, -1, -1);
     }
 
     @Override
     public List<T> list(int limit) {
-        return list(null, null, null, limit);
+        return list(null, null, null, limit, -1);
     }
 
     @Override
     public List<T> list(String orderBy) {
-        return list(null, null, orderBy, -1);
+        return list(null, null, orderBy, -1, -1);
     }
 
     @Override
     public List<T> list(String fields, String[] values) {
-        return list(fields, values, null, -1);
+        return list(fields, values, null, -1, -1);
     }
 
     @Override
     public List<T> list(String fields, String[] values, String orderBy) {
-        return list(fields, values, orderBy, -1);
+        return list(fields, values, orderBy, -1, -1);
     }
 
     @Override
