@@ -11,7 +11,7 @@ public @interface Column {
 
     String name() default "";
 
-    int length() default 255;
+    int length() default -1;
 
     boolean nullable() default true;
 

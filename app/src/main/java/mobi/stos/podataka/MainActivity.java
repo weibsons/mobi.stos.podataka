@@ -73,8 +73,48 @@ public class MainActivity extends Activity {
          */
 
         if (EXEC_TEST) {
-            test();
+            test2();
         }
+    }
+
+    private void test3() {
+        Log.v(TAG, "************** INICIALIZANDO **************** ");
+
+        MontadoraBo montadoraBo = new MontadoraBo(this);
+        Montadora sample = montadoraBo.get("nome = ?", new String[]{"Fiat"});
+
+        CarroBo carroBo = new CarroBo(this);
+        carroBo.insert(new Carro(sample, "TST0002", "Vermelho", 2014, 2014));
+
+        List<Carro> carros = carroBo.list();
+        for (Carro carro : carros) {
+            Log.v(TAG, "Carro -> " + carro.getId() + " .. " + carro.getPlaca() + " .. " + carro.getCor());
+        }
+
+
+        Log.v(TAG, "************** FIM DO PROCESSO **************** ");
+
+        Toast.makeText(this, "Veja o log para mais detalhes", Toast.LENGTH_LONG).show();
+    }
+
+    private void test2() {
+        Log.v(TAG, "************** INICIALIZANDO **************** ");
+
+        MontadoraBo montadoraBo = new MontadoraBo(this);
+        Montadora sample = montadoraBo.get("nome = ?", new String[]{"Fiat"});
+
+        CarroBo carroBo = new CarroBo(this);
+        carroBo.insert(new Carro(sample, "TST0001", "Vermelho", 2014, 2014, "TESTE-CHASSI-110"));
+
+        List<Carro> carros = carroBo.list();
+        for (Carro carro : carros) {
+            Log.v(TAG, "Carro -> " + carro.getId() + " .. " + carro.getPlaca() + " .. " + carro.getCor());
+        }
+
+
+        Log.v(TAG, "************** FIM DO PROCESSO **************** ");
+
+        Toast.makeText(this, "Veja o log para mais detalhes", Toast.LENGTH_LONG).show();
     }
 
     private void test() {
@@ -94,7 +134,7 @@ public class MainActivity extends Activity {
         Log.v(TAG, "Carregando os carros ");
         List<Carro> carros = new ArrayList<>();
         carros.add(new Carro(sample, "KKE1062", "Preto", 2008, 2009));
-        carros.add(new Carro(sample, "KLY8373", "Branco", 2014, 2014));
+        carros.add(new Carro(sample, "KLY837", "Branco", 2014, 2014));
         carroBo.insert(carros);
 
         Carro rep = null;

@@ -21,6 +21,9 @@ public class Carro implements Serializable {
     private int anoFabricacao;
     private int anoModelo;
 
+//    @Transient
+    private String chassi;
+
     public Carro() {
     }
 
@@ -30,6 +33,15 @@ public class Carro implements Serializable {
         this.cor = cor;
         this.anoFabricacao = anoFabricacao;
         this.anoModelo = anoModelo;
+    }
+
+    public Carro(Montadora montadora, String placa, String cor, int anoFabricacao, int anoModelo, String chassi) {
+        this.montadora = montadora;
+        this.placa = placa;
+        this.cor = cor;
+        this.anoFabricacao = anoFabricacao;
+        this.anoModelo = anoModelo;
+        this.chassi = chassi;
     }
 
     public int getId() {
@@ -78,5 +90,13 @@ public class Carro implements Serializable {
 
     public void setAnoModelo(int anoModelo) {
         this.anoModelo = anoModelo;
+    }
+
+    public String getChassi() {
+        return chassi;
+    }
+
+    public void setChassi(String chassi) {
+        this.chassi = chassi;
     }
 }
