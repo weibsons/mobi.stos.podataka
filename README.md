@@ -13,7 +13,7 @@ Gradle:
 ```gradle
 
 dependencies {
-    implementation 'mobi.stos:podataka_lib:1.0'
+    implementation 'mobi.stos:podataka_lib:1.0.1'
 }
 
 ```
