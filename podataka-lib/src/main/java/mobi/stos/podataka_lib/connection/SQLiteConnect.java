@@ -26,6 +26,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
 
     private Context context;
     private final boolean DEBUG;
+    private boolean safeDrop = false;
 
     private Map<String, Set<String>> tables = new HashMap<>();
     private Map<String, Set<String>> newTables = new HashMap<>();
@@ -42,6 +43,24 @@ public class SQLiteConnect extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        this.execCreate(db);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        this.tables(db);
+        this.execDrop(db);
+        this.execCreate(db);
+    }
+
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        this.tables(db);
+        this.execDrop(db);
+        this.execCreate(db);
+    }
+
+    private void execCreate(SQLiteDatabase db) {
         String[] sqlite = this.create();
         for (String s : sqlite) {
             if (DEBUG) {
@@ -51,30 +70,16 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         }
     }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        this.tables(db);
-//        String[] sqlite = this.drops();
-//        for (String s : sqlite) {
-//            if (DEBUG) {
-//                Log.i("SQL", "exec: " + s);
-//            }
-//            db.execSQL(s);
-//        }
-        onCreate(db);
-    }
-
-    @Override
-    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        this.tables(db);
-//        String[] sqlite = this.drops();
-//        for (String s : sqlite) {
-//            if (DEBUG) {
-//                Log.i("SQL", "exec: " + s);
-//            }
-//            db.execSQL(s);
-//        }
-        onCreate(db);
+    private void execDrop(SQLiteDatabase db) {
+        if (safeDrop) {
+            String[] sqlite = this.drops();
+            for (String s : sqlite) {
+                if (DEBUG) {
+                    Log.i("SQL", "exec: " + s);
+                }
+                db.execSQL(s);
+            }
+        }
     }
 
     private Set<Class<?>> entities() {
@@ -97,6 +102,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
 
     /***
      * Function to drop all candidate tables on onUpgrade call event
+     * Usar somente em caso de falha na consulta do esquema das tabelas.
      * @return String[]
      */
     @Deprecated
@@ -323,7 +329,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
                     tableName = tableName.toLowerCase();
 
                     Set<String> columns = new HashSet<>();
-                    Cursor tableCursor = db.rawQuery("SELECT name FROM PRAGMA_TABLE_INFO('" + tableName + "')", null);
+                    Cursor tableCursor = db.rawQuery("PRAGMA TABLE_INFO('" + tableName + "')", null);
                     while (tableCursor.moveToNext()) {
                         columns.add(tableCursor.getString(tableCursor.getColumnIndex("name")));
                     }
@@ -337,6 +343,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
                 cursor.close();
             }
         } catch (Exception e) {
+            safeDrop = true;
             if (DEBUG) {
                 Log.e("SQL", "Erro ao tentar carregar as tabelas existentes. Erro: " + e.getMessage());
             }
