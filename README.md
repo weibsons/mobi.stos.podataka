@@ -209,7 +209,7 @@ Lembrando que só serão mapeada as classes que possuirem a annotation @Entity
 Licença
 -------
 
-Copyright 2016 S'tos Sociedade LTDA.
+Copyright 2016 - Audax Desenvolvimento e Licenciamento de Software LTDA.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
