@@ -227,8 +227,8 @@ Achou e corrigiu um bug ou tem alguma feature em mente e deseja contribuir?
 * Adicione sua feature ou correção de bug.
 * Envie um pull request no [GitHub].
 
-**S'tos App**
+**Audax App**
 
-* Nossa Página: http://stos.mobi/
+* Nossa Página: https://audax.mobi/
 
 * Nossos Apps: https://play.google.com/store/apps/dev?id=9117205727352262184
