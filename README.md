@@ -18,6 +18,24 @@ dependencies {
 
 ```
 
+Ajustando o modo de release
+---------------------------
+
+Em seu arquivo `build.gradle`
+Gradle:
+```gradle
+android {
+    ...
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+    ...
+}
+```
+Se o valor do minifyEnabled estiver com **TRUE** marque-o como **FALSE**
+
 Anotações de Mapeamento
 -----------------------
 
